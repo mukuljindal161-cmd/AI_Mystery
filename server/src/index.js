@@ -5,10 +5,10 @@ import { createApp } from './app.js';
 
 try {
   const env = readEnv();
-  dns.setServers(['1.1.1.1']);
+  if (env.DNS_SERVERS.length) dns.setServers(env.DNS_SERVERS);
 
   await mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 10000 });
-  const server = createApp(env).listen(env.PORT, () =>
+  const server = createApp(env).listen(env.PORT, '0.0.0.0', () =>
     console.log(`Whodunit API listening on port ${env.PORT}${env.MOCK_AI ? ' (mock AI)' : ''}`),
   );
   const stop = () =>

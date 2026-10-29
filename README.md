@@ -4,7 +4,7 @@ A detective game built from [SPEC.md](SPEC.md): describe a mystery, investigate 
 
 ## Local setup
 
-Use Node.js 20.19+ (Node 22 or 24 recommended), npm, and a running MongoDB instance or MongoDB Atlas connection. From the repository root:
+Use Node.js 24.x, npm, and a running MongoDB instance or MongoDB Atlas connection. From the repository root:
 
 ```powershell
 npm.cmd install
@@ -31,11 +31,12 @@ For deterministic development without Gemini calls, set `MOCK_AI=true` and a non
 | `PORT` | API port; default 5000 |
 | `MONGODB_URI` | Required MongoDB connection string |
 | `GEMINI_API_KEY` | Required server-only Google API key |
-| `GEMINI_MODEL` | Defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Defaults to `gemini-3.1-flash-lite` |
 | `CLIENT_ORIGIN` | Exact allowed browser origin; defaults to `http://localhost:5173` |
 | `MOCK_AI` | `true` enables deterministic development cases; defaults to `false` |
 | `NODE_ENV` | `development`, `test`, or `production` |
 | `TRUST_PROXY` | Trusted reverse-proxy hop count; default 0, Render configuration uses 1 |
+| `DNS_SERVERS` | Optional comma-separated DNS IPs; leave unset on Render; use `1.1.1.1` for the local router workaround |
 
 Client: `VITE_API_URL` is the API base including `/api`; defaults to `http://localhost:5000/api`. Vite injects this at build time. Never put secrets in `VITE_*` variables.
 
@@ -50,7 +51,7 @@ npm.cmd run test -w client
 
 The server suite uses an injected in-memory repository and mocked Mongoose reads for concurrency tests; it does not need a database, API key, or network. It tests scoring, AI validation, retries/timeouts/safety blocks, all six case endpoints, secrecy, score tampering, duplicate discoveries, hint limits, final accusation, rate limits, and version conflicts. Client tests exercise premise validation, failed generation, server-confirmed clue discovery, and accusation confirmation.
 
-Verified on 29 October 2026: all **41 tests passed** (38 server, 3 client), and the production frontend build succeeded. The dependency audit reports no high or critical findings; the two remaining moderate package entries are React Router and React Router DOM, discussed below. Live MongoDB/Gemini integration, visual browser QA, and deployment have not yet been verified.
+Verified on 29 October 2026: all **46 tests passed** (43 server, 3 client), the production frontend build succeeded with a public HTTPS API configuration, and Render's production-only install command succeeded in a clean temporary directory. Live MongoDB connectivity and an Easy Gemini-generated case were verified locally earlier. Visual browser QA and hosting deployment remain unverified. The last dependency audit reported no high or critical findings; the two remaining moderate package entries are React Router and React Router DOM, discussed below.
 
 For a production-like local run, start `npm.cmd start -w server`, build the client, and use `npm.cmd run preview -w client`. Set `CLIENT_ORIGIN` to the preview origin first.
 
@@ -82,13 +83,11 @@ Creation accepts `{ "premise": "A missing compass at midnight", "difficulty": "m
 
 ## Deployment
 
-Deployment status: **not deployed**. MongoDB Atlas, a Gemini key, and hosting access must be configured before live verification.
+Deployment status: **not deployed**. The repository is configured for an Express API on **Render** and a React frontend on **Vercel**. Both services use the repository root and its shared npm lockfile.
 
-1. Create an Atlas database/user and allow the backend host's outbound IPs.
-2. Deploy the API to Render using root `render.yaml`, or to Railway with root build `npm ci` and start `npm start -w server`. Supply all required server environment variables. Check `/api/health`.
-3. Deploy the frontend to Vercel with `client` as root, build `npm run build`, output `dist`; `client/vercel.json` supplies the SPA fallback. Netlify can use the repository root, build `npm ci && npm run build`, publish `client/dist`; `client/public/_redirects` supplies the fallback.
-4. Set `VITE_API_URL` to the deployed API base, and set the backend's `CLIENT_ORIGIN` to the exact frontend origin. Rebuild after changing the client variable.
-5. Use HTTPS and test a complete case at every difficulty. Record the live URL here after deployment.
+Follow [DEPLOYMENT.md](DEPLOYMENT.md) for exact dashboard settings, environment variables, Atlas networking, and verification steps. Render reads `render.yaml`; Vercel reads the root `vercel.json`.
+
+The local DNS workaround is opt-in through `DNS_SERVERS=1.1.1.1`; leave it unset on Render. Production startup requires an HTTPS `CLIENT_ORIGIN`, and Vercel builds require a public HTTPS `VITE_API_URL`.
 
 ## Manual acceptance checks and limits
 

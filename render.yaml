@@ -3,7 +3,7 @@ services:
     name: whodunit-api
     runtime: node
     plan: free
-    buildCommand: npm ci --workspace server --include-workspace-root=false
+    buildCommand: npm ci --workspace server --include-workspace-root=false --omit=dev
     startCommand: npm start --workspace server
     healthCheckPath: /api/health
     envVars:
@@ -16,6 +16,8 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-3.1-flash-lite
+      - key: MOCK_AI
+        value: "false"
       - key: CLIENT_ORIGIN
         sync: false
