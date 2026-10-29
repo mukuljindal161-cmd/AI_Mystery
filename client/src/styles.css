@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  html {
+    @apply bg-ink text-paper;
+    color-scheme: dark;
+  }
+  body {
+    @apply m-0 font-sans antialiased;
+    background-image: radial-gradient(ellipse at 80% 0%, #28332744, transparent 55%);
+  }
+  ::selection {
+    @apply bg-gold text-ink;
+  }
+  :focus-visible {
+    @apply outline outline-2 outline-offset-4 outline-gold;
+  }
+  button,
+  a,
+  input,
+  textarea,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:disabled {
+    @apply cursor-not-allowed opacity-40;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+@layer components {
+  .page {
+    @apply mx-auto w-full max-w-6xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14;
+  }
+  .page-title {
+    @apply mb-6 mt-5 font-display text-4xl leading-tight tracking-tight sm:text-5xl;
+  }
+  .eyebrow {
+    @apply text-[10px] font-medium uppercase tracking-[.19em] text-gold;
+  }
+  .panel {
+    @apply rounded border border-paper/15 bg-panel/70 p-5 sm:p-6;
+  }
+  .btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-3 rounded-sm border border-gold bg-gold px-5 py-3 text-sm font-medium text-ink transition hover:bg-[#e8ca8f] disabled:hover:bg-gold;
+  }
+  .btn-outline {
+    @apply inline-flex min-h-11 items-center justify-center gap-3 rounded-sm border border-paper/25 px-4 py-2.5 text-sm text-paper transition hover:border-gold hover:text-gold;
+  }
+  .section-label {
+    @apply mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-paper/15 pb-4;
+  }
+  .section-label h2 {
+    @apply font-display text-2xl;
+  }
+  .section-label span {
+    @apply font-mono text-[10px] tracking-wider text-muted;
+  }
+}

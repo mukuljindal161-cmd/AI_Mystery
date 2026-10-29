@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: whodunit-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci --workspace server --include-workspace-root=false
+    startCommand: npm start --workspace server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: 1
+      - key: MONGODB_URI
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: CLIENT_ORIGIN
+        sync: false
